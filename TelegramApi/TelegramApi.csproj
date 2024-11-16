@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="TDLib" Version="1.8.29" />
+    <PackageReference Include="TDLib.Api" Version="1.8.29" />
+    <PackageReference Include="tdlib.native" Version="1.8.29" />
+    <PackageReference Include="tdlib.native.win-x64" Version="1.8.29" />
+  </ItemGroup>
+
+</Project>
