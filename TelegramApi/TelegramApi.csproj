@@ -8,10 +8,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="TDLib" Version="1.8.29" />
     <PackageReference Include="TDLib.Api" Version="1.8.29" />
     <PackageReference Include="tdlib.native" Version="1.8.29" />
     <PackageReference Include="tdlib.native.win-x64" Version="1.8.29" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Telegram.Td">
+      <HintPath>..\..\..\..\Downloads\Release\Telegram.Td.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>
