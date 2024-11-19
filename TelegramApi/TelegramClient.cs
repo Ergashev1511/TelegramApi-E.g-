@@ -5,13 +5,12 @@ using TdLib;
 public class TelegramClient
 {
     private readonly TdClient _client;
-    private bool _isAuthenticated = false;
+    private string _phoneNumber;
+    private bool _isAuthenticated;
 
     public TelegramClient()
     {
         _client = new TdClient();
-
-        // Subscribe to updates (including authorization state changes)
         _client.UpdateReceived += async (sender, update) =>
         {
             if (update is TdApi.Update.UpdateAuthorizationState state)
@@ -19,29 +18,27 @@ public class TelegramClient
                 await HandleAuthorizationState(state.AuthorizationState);
             }
         };
-
     }
-
     public TdClient Client => _client;
     public bool IsAuthenticated => _isAuthenticated;
-
 
     public async Task InitializeAsync(int apiId, string apiHash, string phoneNumber)
     {
         if (apiId <= 0 || string.IsNullOrEmpty(apiHash) || string.IsNullOrEmpty(phoneNumber))
         {
-            Console.WriteLine("Xatolik: API ID, API Hash va telefon raqamini tekshiring.");
+            Console.WriteLine("Xatolik: API ID, API Hash yoki telefon raqam noto'g'ri.");
             return;
         }
 
+        _phoneNumber = phoneNumber;
+
         try
         {
-            Console.WriteLine("Telegram mijoziga ulanish boshlandi...");
+            Console.WriteLine("Telegram mijozini sozlash boshlandi...");
 
-            // Set Telegram client parameters (API credentials)
             await _client.ExecuteAsync(new TdApi.SetTdlibParameters
             {
-                DatabaseDirectory = "tdlib",
+                DatabaseDirectory = "tdlib_new",
                 UseMessageDatabase = true,
                 UseSecretChats = true,
                 ApiId = apiId,
@@ -52,54 +49,11 @@ public class TelegramClient
                 ApplicationVersion = "1.0"
             });
 
-            Console.WriteLine("Telegram sozlamalari muvaffaqiyatli o'rnatildi.");
-
-            // Start phone number authentication
-            await _client.ExecuteAsync(new TdApi.SetAuthenticationPhoneNumber
-            {
-                PhoneNumber = phoneNumber
-            });
-
-            Console.WriteLine("Telefon raqam kiritildi. Tasdiqlash kodi kutilmoqda...");
-
-            // Wait for the authentication process to complete
-            while (!_isAuthenticated)
-            {
-                await Task.Delay(1000);  // Wait for a second before checking again
-            }
-
-            Console.WriteLine("Autentifikatsiya muvaffaqiyatli amalga oshirildi!");
+            Console.WriteLine("Sozlamalar muvaffaqiyatli o'rnatildi.");
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Xatolik yuz berdi: {ex.Message}");
-        }
-    }
-
-    public async Task AuthenticateAsync(string phoneCode)
-    {
-        if (string.IsNullOrEmpty(phoneCode))
-        {
-            Console.WriteLine("Tasdiqlash kodi kiritilmagan.");
-            return;
-        }
-
-        try
-        {
-            // Execute the authentication check with the provided code
-            var result = await _client.ExecuteAsync(new TdApi.CheckAuthenticationCode
-            {
-                Code = phoneCode
-            });
-
-            // Success message
-            Console.WriteLine($"Autentifikatsiya muvaffaqiyatli: {result}");
-            _isAuthenticated = true;
-        }
-        catch (Exception ex)
-        {
-            // Handle failed authentication
-            Console.WriteLine($"Autentifikatsiya xatoligi: {ex.Message}");
         }
     }
 
@@ -109,19 +63,16 @@ public class TelegramClient
 
         switch (authorizationState)
         {
-            case TdApi.AuthorizationState.AuthorizationStateWaitTdlibParameters:
-                Console.WriteLine("Telegram kutubxona parametrlari kutilmoqda...");
-                break;
-
             case TdApi.AuthorizationState.AuthorizationStateWaitPhoneNumber:
                 Console.WriteLine("Telefon raqami kiritish kutilmoqda...");
+                await SetPhoneNumberAsync();
                 break;
 
             case TdApi.AuthorizationState.AuthorizationStateWaitCode:
                 Console.WriteLine("Tasdiqlash kodi kutilmoqda...");
-                Console.WriteLine("Code ni kiriting: ");
-                var code = Console.ReadLine();
-                await AuthenticateAsync(code);
+                Console.WriteLine("Kod kiriting: ");
+                var code = await Task.Run(() => Console.ReadLine());
+                await CheckAuthenticationCodeAsync(code);
                 break;
 
             case TdApi.AuthorizationState.AuthorizationStateReady:
@@ -147,10 +98,55 @@ public class TelegramClient
         }
     }
 
-    // Method to retrieve the phone code if required
-    public async Task RetrieveCodeAsync()
+    private async Task SetPhoneNumberAsync()
     {
-        // Handling other potential states like waiting for a code again after it expires, etc.
-        // This method may be used to allow the user to request the code again if necessary
+        try
+        {
+            await _client.ExecuteAsync(new TdApi.SetAuthenticationPhoneNumber
+            {
+                PhoneNumber = _phoneNumber
+            });
+            Console.WriteLine("Telefon raqam muvaffaqiyatli yuborildi.");
+        }
+        catch (TdLib.TdException ex)
+        {
+            Console.WriteLine($"Telefon raqamni yuborishda xatolik: {ex.Message}");
+        }
+    }
+
+    private async Task CheckAuthenticationCodeAsync(string code)
+    {
+        if (string.IsNullOrEmpty(code))
+        {
+            Console.WriteLine("Tasdiqlash kodi kiritilmadi.");
+            return;
+        }
+
+        try
+        {
+            await _client.ExecuteAsync(new TdApi.CheckAuthenticationCode
+            {
+                Code = code
+            });
+            Console.WriteLine("Tasdiqlash kodi to'g'ri!");
+            _isAuthenticated = true;
+        }
+        catch (TdLib.TdException ex)
+        {
+            Console.WriteLine($"Tasdiqlash kodi xato: {ex.Message}");
+        }
+    }
+
+    public async Task ResendCodeAsync()
+    {
+        try
+        {
+            await _client.ExecuteAsync(new TdApi.ResendAuthenticationCode());
+            Console.WriteLine("Tasdiqlash kodi qayta yuborildi.");
+        }
+        catch (TdLib.TdException ex)
+        {
+            Console.WriteLine($"Tasdiqlash kodini qayta yuborishda xatolik: {ex.Message}");
+        }
     }
 }
