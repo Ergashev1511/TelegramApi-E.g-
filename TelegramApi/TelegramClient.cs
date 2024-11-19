@@ -38,7 +38,7 @@ public class TelegramClient
 
             await _client.ExecuteAsync(new TdApi.SetTdlibParameters
             {
-                DatabaseDirectory = "tdlib_new",
+                DatabaseDirectory = "tdlib_new1",
                 UseMessageDatabase = true,
                 UseSecretChats = true,
                 ApiId = apiId,

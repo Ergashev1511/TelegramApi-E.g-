@@ -20,13 +20,36 @@ class Program
         var chatService = new ChatService(telegramClient.Client);
         var messageService = new MessageService(telegramClient.Client);
 
-        
+
         while (!telegramClient.IsAuthenticated)
         {
-            await Task.Delay(10000); 
+            Console.WriteLine("Tasdiqlash kodi kiritilmagan. Kod kiritishni istaysizmi? (y/n): ");
+            var userInput = Console.ReadLine();
+
+            if (userInput?.ToLower() == "y")
+            {
+                Console.WriteLine("Tasdiqlash kodini kiriting: ");
+                var code = Console.ReadLine();
+                if (!string.IsNullOrEmpty(code))
+                {
+                    await telegramClient.Client.CheckAuthenticationCodeAsync(code);
+                }
+            }
+            else if (userInput?.ToLower() == "n")
+            {
+                Console.WriteLine("Jarayon to'xtatildi. Telegramga ulanish qaytarildi.");
+                break;
+            }
+            else
+            {
+                Console.WriteLine("Iltimos, 'y' yoki 'n' ni tanlang.");
+            }
+
+            // Tasdiqlash jarayonida biroz kutish
+            await Task.Delay(2000);
         }
 
-       
+
         var allChats = await chatService.GetAllChatsAsync();
 
        
@@ -53,7 +76,7 @@ class Program
             {
                 Console.WriteLine($"Matn: {messageText.Text.Text}");
 
-                long chatId = 2078159566;
+                long chatId = 7832251761;
 
                 await telegramClient.Client.ExecuteAsync(new TdApi.SendMessage
                 {
