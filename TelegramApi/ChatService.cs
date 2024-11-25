@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using TdLib;
+using Telegram.Td.Api;
 
 public class ChatService
 {
@@ -37,3 +38,5 @@ public class ChatService
             chat.Type is TdApi.ChatType.ChatTypeSupergroup).ToList();
     }
 }
+
+

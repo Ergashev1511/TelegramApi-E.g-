@@ -63,34 +63,46 @@ class Program
         }
 
         // Guruh ID tanlash
-        Console.Write("Guruh ID kiriting: ");
-        var groupId = Convert.ToInt64(await Task.Run(() => Console.ReadLine()));
+        // Console.Write("Guruh ID kiriting: ");
+        // var groupId = Convert.ToInt64(await Task.Run(() => Console.ReadLine()));
 
-        var messages = await messageService.GetMessagesFromGroupAsync(groupId);
+        // var messages = await messageService.GetMessagesFromGroupAsync(groupId);
 
-      
 
-        foreach (var message in messages)
-        {
-            if (message.Content is TdApi.MessageContent.MessageText messageText)
-            {
-                Console.WriteLine($"Matn: {messageText.Text.Text}");
 
-                long chatId = 7832251761;
+        //foreach (var message in messages)
+        //{
+        //    if (message.Content is TdApi.MessageContent.MessageText messageText)
+        //    {
+        //        Console.WriteLine($"Matn: {messageText.Text.Text}");
 
-                await telegramClient.Client.ExecuteAsync(new TdApi.SendMessage
-                {
-                    ChatId = chatId,
-                    InputMessageContent = new TdApi.InputMessageContent.InputMessageText
-                    {
-                        Text = new TdApi.FormattedText
-                        {
-                            Text = messageText.Text.Text,
-                        }
-                    }
-                });
-            }
-        }
+        //        long chatId = 7832251761;
+
+        //        await telegramClient.Client.ExecuteAsync(new TdApi.SendMessage
+        //        {
+        //            ChatId = chatId,
+        //            InputMessageContent = new TdApi.InputMessageContent.InputMessageText
+        //            {
+        //                Text = new TdApi.FormattedText
+        //                {
+        //                    Text = messageText.Text.Text,
+        //                }
+        //            }
+        //        });
+        //    }
+        //}
+
+        var getGroupId = 142;
+        var AddGroupId = 25;
+
+        //var members = await chatService.GetSupergroupMembersAsync(getGroupId);
+        //List<int> AddUserIds= new List<int>();
+        //foreach (var member in members)
+        //{
+        //    AddUserIds.Add(member.MemberId);
+        //}
     }
+
+    
     
 }
