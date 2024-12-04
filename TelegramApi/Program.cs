@@ -62,13 +62,16 @@ class Program
             Console.WriteLine($"Guruh nomi: {group.Title}, ID: {group.Id}");
         }
 
+
+
+
         // Guruh ID tanlash
         // Console.Write("Guruh ID kiriting: ");
-        // var groupId = Convert.ToInt64(await Task.Run(() => Console.ReadLine()));
+     //   var groupId = Convert.ToInt64(await Task.Run(() => Console.ReadLine()));
 
         // var messages = await messageService.GetMessagesFromGroupAsync(groupId);
 
-
+        //await messageService.RetrieveMessagesPeriodically(groupId);
 
         //foreach (var message in messages)
         //{

@@ -114,7 +114,7 @@ namespace TelegramApiBot
                 // To'lov muvaffaqiyatli bo'lgan holatda
                 bool isPaymentSuccessful = true; // To'lov natijasini tekshiring
                 if (isPaymentSuccessful)
-                {
+                {tr
                     long groupId = -1002413825295; // Guruh ID  Default qilib berildi
                                                    
                     await botClient.ApproveChatJoinRequestAsync(
